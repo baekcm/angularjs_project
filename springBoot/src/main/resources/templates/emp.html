@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html>
+
+  	<head>
+
+	    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular.min.js"></script>
+	
+		<!-- Latest compiled and minified CSS -->
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+		<!-- jQuery library -->
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.0/jquery.min.js"></script>
+	
+		<!-- Latest compiled JavaScript -->
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+	
+		<script type="text/javascript">
+		
+		    var app = angular.module('todo', []);
+		    
+			//Controller Part
+			app.controller('TodoCtrl', function($scope, $http) {
+			
+			$scope.emp = [];
+			$scope.empForm = {
+	            empno : "",
+	            ename : "",
+	            job : "",
+	            mgr : "",
+	            hiredate : "",
+	            sal : "",
+	            comm : "",
+	            deptno : "",
+	            swich : true // edit=false/create=true
+            };
+			
+			// Now load the data from server
+			_refreshEmpData();
+			
+			//HTTP POST/PUT methods for add/edit country
+			$scope.submitEmp = function() {
+         
+	            var method = "";
+	            var url = "";
+	            if ($scope.empForm.swich) {
+	                //Id is absent in form data, it is create new emp operation
+	                method = 'POST';
+	                url = '/list';
+	            } else {
+	                //Id is present in form data, it is edit emp operation
+	                method = 'PUT';
+	                url = '/list';
+	            }
+	            
+	            alert(angular.toJson($scope.empForm));
+         
+	            $http({
+	                method : method,
+	                url : url,
+	                //data : angular.toJson($scope.empForm),
+	                data : angular.toJson($scope.empForm),
+	                
+	                headers : {
+	                    'Content-Type' : 'application/json'
+	                }
+	            }).then(_success, _error);
+            };
+         
+            //HTTP DELETE- delete emp by empno
+            $scope.deleteEmp = function(emp) {
+                $http({
+                    method : 'DELETE',
+                    url : '/list/' + emp.empno
+                }).then(_success, _error);
+            };
+            
+            function _success(response) {
+				_refreshEmpData();
+                _clearFormData();
+            }
+     
+            function _error(response) {
+                console.log(response.statusText);
+            }
+ 
+            // In case of edit, populate form fields and assign form.id with country id
+            $scope.editEmp = function(emp) {
+	            $scope.empForm.empno = emp.empno;
+	            $scope.empForm.ename = emp.ename;
+	            $scope.empForm.job = emp.job;
+	            $scope.empForm.mgr = emp.mgr;
+	            $scope.empForm.hiredate = emp.hiredate;
+	            $scope.empForm.sal = emp.sal;
+	            $scope.empForm.comm = emp.comm;
+	            $scope.empForm.deptno = emp.deptno;
+	            $scope.empForm.swich = false;
+            };
+            
+            $scope.isValid = function(value) {
+                return !value
+            };
+			
+            /* Private Methods */
+			// HTTP GET- get all emp collection
+			function _refreshEmpData(){
+            	
+		        $http({
+		            method : 'GET', 
+		            url : '/list'
+		        }).then(function successCallback(response){
+		            $scope.emp = response.data;
+		        }, function errorCallback(response){
+		        	alert("error");
+		            console.log(response.statusText); 
+		        });
+		    }
+			
+            //Clear the form
+            function _clearFormData() {
+                $scope.empForm.empno = "";
+                $scope.empForm.ename = "";
+                $scope.empForm.job = "";
+                $scope.empForm.mgr = "";
+                $scope.empForm.hiredate = "";
+                $scope.empForm.sal = "";
+                $scope.empForm.comm = "";
+                $scope.empForm.deptno = "";
+            };
+			
+		});
+		</script>
+		
+  	</head>
+
+  	<body ng-app="todo" ng-controller="TodoCtrl" novalidate>
+        <div class="container">
+	    	<h1>
+	           AngularJS Restful web services example using $http
+	        </h1>
+        
+	        <form name="todoForm" ng-submit="submitEmp()">
+	            <table class="table table-bordered">
+	                <tr>
+	                    <th colspan="2">Add/Edit emp</th>
+	                </tr>
+	                <tr>
+	                    <td>Empno</td>
+	                    <td>
+	                    	<div class="form-group" ng-class="{ 'has-error' : todoForm.empno.$invalid && !todoForm.empno.$pristine }">
+	                    		<input type="text" name="empno" ng-model="empForm.empno" class="form-control" placeholder="Empno input" minlength="4" maxlength="4" ng-pattern="/[0-9]/ " required />
+	                    		<p ng-show="todoForm.empno.$error.minlength" class="help-block">empno is too short.</p>
+	                    		<p ng-show="todoForm.empno.$error.pattern" class="help-block">empno is only number.</p>
+	                    	</div>
+						</td>
+	                </tr>
+	                <tr>
+	                    <td>Ename</td>
+	                    <td>
+	                    	<input type="text" ng-model="empForm.ename" class="form-control" placeholder="Ename input" />
+	                    </td>
+	                </tr>
+	                <tr>
+	                    <td>Job</td>
+	                    <td>
+	                    	<input type="text" ng-model="empForm.job" class="form-control" placeholder="Job input" />
+	                    </td>
+	                </tr>
+	                <tr>
+	                    <td>Mgr</td>
+	                    <td>
+	                    	<input type="text" ng-model="empForm.mgr" class="form-control" placeholder="Mgr input" />
+	                    </td>
+	                </tr>
+	                <tr>
+	                    <td>Hiredate</td>
+	                    <td>
+	                    	<input type="text" ng-model="empForm.hiredate" class="form-control" placeholder="Hiredate input" />
+	                    </td>
+	                </tr>
+	                <tr>
+	                    <td>Sal</td>
+	                    <td>
+	                    	<input type="text" ng-model="empForm.sal" class="form-control" placeholder="Sal input" />
+	                    </td>
+	                </tr>
+	                <tr>
+	                    <td>Comm</td>
+	                    <td>
+	                    	<input type="text" ng-model="empForm.comm" class="form-control" placeholder="Comm input" />
+	                    </td>
+	                </tr>
+	                <tr>
+	                    <td>Deptno</td>
+	                    <td>
+	                    	<input type="text" ng-model="empForm.deptno" class="form-control" placeholder="Deptno input" />
+	                    </td>
+	                </tr>
+	                <tr>
+	                    <td colspan="2"><input type="submit" value="Write" class="btn btn-primary btn-lg" /></td>
+	                </tr>
+	            </table>
+	        </form>
+	        <br />
+	        <table class="table table-bordered">
+	            <tr>
+	                <th>Empno</th>
+	                <th>Ename</th>
+	                <th>Job</th>
+	                <th>Mgr</th>
+	                <th>Hiredate</th>
+	                <th>Sal</th>
+	                <th>Comm</th>
+	                <th>Deptno</th>
+	                <th>Operations</th>
+	            </tr>
+	            <tr ng-repeat="data in emp">
+				    <td> {{ data.empno }}</td>
+				    <td>{{ data.ename }}</td>
+				    <td>{{ data.job }}</td>
+				    <td>{{ data.mgr }}</td>
+				    <td>{{ data.hiredate }}</td>
+				    <td>{{ data.sal }}</td>
+				    <td>{{ data.comm }}</td>
+				    <td>{{ data.deptno }}</td>
+	                <td><a ng-click="editEmp(data)" class="btn btn-success btn-sm">Edit</a> | <a ng-click="deleteEmp(data)" class="btn btn-danger btn-sm">Delete</a></td>
+	            </tr>
+	        </table>
+		</div>
+		
+  	</body>
+
+</html>
