@@ -11,6 +11,8 @@
 		<!-- Latest compiled JavaScript -->
 		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 		
+		<script src="https://angular-ui.github.io/bootstrap/ui-bootstrap-tpls-0.11.0.js"></script>
+		
 		<!-- angularjs 경로 -->
 		<script src="js/app.js"></script>
 		<script src="js/todoCtrl.js"></script>
@@ -115,7 +117,7 @@
 	                <th>Deptno</th>
 	                <th>Operations</th>
 	            </tr>
-	            <tr ng-repeat="data in emp | filter : search">
+	            <tr ng-repeat="data in emp.slice(((currentPage-1)*itemsPerPage), ((currentPage)*itemsPerPage))">
 				    <td> {{ data.empno }}</td>
 				    <td>{{ data.ename }}</td>
 				    <td>{{ data.job }}</td>
@@ -127,6 +129,9 @@
 	                <td><a ng-click="editEmp(data)" class="btn btn-success btn-sm">Edit</a> | <a ng-click="deleteEmp(data)" class="btn btn-danger btn-sm">Delete</a></td>
 	            </tr>
 	        </table>
+	        <!-- pagination -->
+    		<pagination total-items="totalItems" ng-model="currentPage" max-size="maxSize" class="pagination-sm" boundary-links="true" rotate="false" num-pages="numPages" items-per-page="itemsPerPage"></pagination>
+    		<pre>Page: {{currentPage}} / {{numPages}}</pre>
 		</div>
 		
   	</body>

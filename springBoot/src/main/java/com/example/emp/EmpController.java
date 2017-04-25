@@ -5,6 +5,10 @@ import com.example.model.Emp;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -21,9 +25,9 @@ public class EmpController {
 	
 	// emp table allData return => List
 	@RequestMapping(value = "/empData", method = RequestMethod.GET, headers = "Accept=application/json")
-	public List empList() throws Exception 
+	//public List empList(Model model, @PageableDefault(size = 5) Pageable pageable) throws Exception 
+	public List empList() throws Exception
 	{
-		System.out.println("List Emp");
 		List<Emp> empList = empRepository.findAll();
 		return empList;
 	}
