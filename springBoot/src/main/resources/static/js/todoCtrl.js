@@ -1,7 +1,8 @@
 //Controller Part
-app.controller('TodoCtrl', function($scope, $http) {
+app.controller('TodoCtrl', function($scope, $http, $filter) {
 	
 	$scope.emp = [];
+	$scope.filtered = {};
 	$scope.empForm = {
 	    empno : "",
 	    ename : "",
@@ -90,12 +91,14 @@ app.controller('TodoCtrl', function($scope, $http) {
 	        url : '/empData'
 	    }).then(function successCallback(response){
 	        $scope.emp = response.data;
-	        pagination(response.data.length);
+	        pagination();
 	    }, function errorCallback(response){
 	    	alert("error");
 	        console.log(response.statusText); 
 	    });
 	}
+	
+	//alert($scope.emp.length);
 	
 	//Clear the form
 	function _clearFormData() {
@@ -111,9 +114,8 @@ app.controller('TodoCtrl', function($scope, $http) {
 	    $scope.empForm.swich = true;
 	};
 	
-	function pagination(totCount){
+	function pagination(){
 		$scope.viewby = 5;
-		$scope.totalItems = totCount;
 		$scope.currentPage = 1;
 		$scope.itemsPerPage = $scope.viewby;
 		$scope.maxSize = 10; //Number of pager buttons to show
@@ -121,6 +123,12 @@ app.controller('TodoCtrl', function($scope, $http) {
 		$scope.setPage = function (pageNo) {
 			$scope.currentPage = pageNo;
 		};
+		
+		$scope.$watch('searchText', function (term) {
+		    var obj = term;
+		    $scope.filterList = $filter('filter')($scope.emp, obj);
+		    $scope.currentPage = 1;
+		});
 
 		$scope.pageChanged = function() {
 		    console.log('Page changed to: ' + $scope.currentPage);
@@ -132,4 +140,14 @@ app.controller('TodoCtrl', function($scope, $http) {
 		}
 	}
 
+});
+
+app.filter('start', function () {
+	return function (input, start) {
+	    if (!input || !input.length) { 
+	    	return; 
+	    }
+	    start = +start;
+	    return input.slice(start);
+	};
 });

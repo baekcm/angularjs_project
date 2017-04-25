@@ -86,6 +86,7 @@
 	        
 	        <nav class="navbar navbar-default">
 		        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+        	<!-- 
 	      			<ul class="nav navbar-nav">
 	        			<li class="dropdown">
 	          				<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">ALL <span class="caret"></span></a>
@@ -96,13 +97,14 @@
 	          				</ul>
 	        			</li>
 	      			</ul>
+   			-->
 	      			<form class="navbar-form navbar-left">
 	        			<div class="form-group">
-	          				<input type="text" class="form-control" placeholder="Search">
+	          				<input type="text" ng-model="searchText" class="form-control" placeholder="Search">
 	        			</div>
-	        			<button type="submit" class="btn btn-default">Submit</button>
+	        			<!-- <button type="submit" class="btn btn-default">Submit</button> -->
 	      			</form>
-		  		</div><!-- /.navbar-collapse -->
+		  		</div>
 	  		</nav>
 	        
 	        <table class="table table-bordered">
@@ -117,7 +119,8 @@
 	                <th>Deptno</th>
 	                <th>Operations</th>
 	            </tr>
-	            <tr ng-repeat="data in emp.slice(((currentPage-1)*itemsPerPage), ((currentPage)*itemsPerPage))">
+	            <!-- <tr ng-repeat="data in emp.slice(((currentPage-1)*itemsPerPage), ((currentPage)*itemsPerPage)) | filter : search.ename"> -->
+	            <tr ng-repeat="data in filtered = (filterList | filter: searchText) | start: (currentPage - 1) * itemsPerPage | limitTo: itemsPerPage">
 				    <td> {{ data.empno }}</td>
 				    <td>{{ data.ename }}</td>
 				    <td>{{ data.job }}</td>
@@ -130,7 +133,7 @@
 	            </tr>
 	        </table>
 	        <!-- pagination -->
-    		<pagination total-items="totalItems" ng-model="currentPage" max-size="maxSize" class="pagination-sm" boundary-links="true" rotate="false" num-pages="numPages" items-per-page="itemsPerPage"></pagination>
+    		<pagination total-items="filtered.length" ng-model="currentPage" max-size="maxSize" class="pagination-lg" boundary-links="true" rotate="false" num-pages="numPages" items-per-page="itemsPerPage"></pagination>
     		<pre>Page: {{currentPage}} / {{numPages}}</pre>
 		</div>
 		
